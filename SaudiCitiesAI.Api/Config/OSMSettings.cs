@@ -1,0 +1,6 @@
+﻿namespace SaudiCitiesAI.Api.Config
+{
+    public class OSMSettings
+    {
+    }
+}
