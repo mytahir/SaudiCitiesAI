@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SaudiCitiesAI.Domain.Entities;
 
 namespace SaudiCitiesAI.AI.Prompts
 {
-    internal class AttractionPrompt
+    public static class AttractionPrompt
     {
+        public static string Build(Attraction attraction)
+        {
+            return $@"
+Provide a compelling description of the attraction '{attraction.Name}' in Saudi Arabia.
+Include history, significance, visitor experience, and why it's popular.";
+        }
     }
 }

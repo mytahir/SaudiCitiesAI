@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SaudiCitiesAI.AI.Models
+﻿namespace SaudiCitiesAI.AI.Models
 {
-    internal class LongCatResponse
+    public class LongCatResponse
     {
+        public string Content { get; set; } = string.Empty;
+        public string RawJson { get; set; } = string.Empty;
+        public bool Success { get; set; } = true;
     }
 }

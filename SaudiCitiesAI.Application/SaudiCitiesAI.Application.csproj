@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="16.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SaudiCitiesAI.AI\SaudiCitiesAI.AI.csproj" />
     <ProjectReference Include="..\SaudiCitiesAI.Domain\SaudiCitiesAI.Domain.csproj" />
   </ItemGroup>

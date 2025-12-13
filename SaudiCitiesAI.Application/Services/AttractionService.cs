@@ -1,4 +1,5 @@
-﻿using SaudiCitiesAI.Application.DTOs;
+﻿using AutoMapper;
+using SaudiCitiesAI.Application.DTOs;
 using SaudiCitiesAI.Application.Interfaces;
 using SaudiCitiesAI.Domain.Interfaces;
 using System;
@@ -11,37 +12,34 @@ namespace SaudiCitiesAI.Application.Services
 {
     public class AttractionService : IAttractionService
     {
-        private readonly IAttractionRepository _attractionRepo;
+        private readonly IAttractionRepository _attractionRepository;
+        private readonly IMapper _mapper;
 
-        public AttractionService(IAttractionRepository attractionRepo)
+        public AttractionService(
+            IAttractionRepository attractionRepository,
+            IMapper mapper)
         {
-            _attractionRepo = attractionRepo;
+            _attractionRepository = attractionRepository;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<AttractionDto>> GetByCityIdAsync(Guid cityId, CancellationToken ct = default)
+        public async Task<IEnumerable<AttractionDto>> GetByCityIdAsync(
+            Guid cityId,
+            CancellationToken ct = default)
         {
-            var list = await _attractionRepo.GetByCityIdAsync(cityId, ct);
-            return list.Select(Map);
+            var results = await _attractionRepository.GetByCityIdAsync(cityId);
+
+            return _mapper.Map<IEnumerable<AttractionDto>>(results);
         }
 
-        public async Task<IEnumerable<AttractionDto>> SearchByNameAsync(string q, int limit = 50, CancellationToken ct = default)
+        public async Task<IEnumerable<AttractionDto>> SearchByNameAsync(
+            string q,
+            int limit = 50,
+            CancellationToken ct = default)
         {
-            var list = await _attractionRepo.SearchByNameAsync(q, ct);
-            return list.Take(limit).Select(Map);
-        }
+            var results = await _attractionRepository.SearchByNameAsync(q);
 
-        private AttractionDto Map(Domain.Entities.Attraction a)
-        {
-            return new AttractionDto
-            {
-                Id = a.Id,
-                CityId = a.CityId,
-                Name = a.Name,
-                Category = a.Category.ToString(),
-                Latitude = Convert.ToDecimal(a.Coordinates.Latitude),
-                Longitude = Convert.ToDecimal(a.Coordinates.Longitude),
-                Description = a.Description
-            };
+            return _mapper.Map<IEnumerable<AttractionDto>>(results.Take(limit));
         }
     }
 }

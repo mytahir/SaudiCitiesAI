@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SaudiCitiesAI.Application.Interfaces;
 using SaudiCitiesAI.Api.DTOs.Requests;
-using System;
-using System.Threading.Tasks;
+using SaudiCitiesAI.Api.DTOs.Responses;
 
 namespace SaudiCitiesAI.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/cities/{cityId:guid}/ai")]
+    [Route("api/ai/insights")]
     public class AIInsightsController : ControllerBase
     {
         private readonly IAIInsightService _aiService;
@@ -17,12 +16,25 @@ namespace SaudiCitiesAI.Api.Controllers
             _aiService = aiService;
         }
 
-        [HttpPost("insights")]
-        public async Task<IActionResult> GenerateInsight(Guid cityId, [FromBody] AIPromptRequest request)
+        /// <summary>
+        /// Generate AI insight for a city
+        /// </summary>
+        [HttpPost("city/{cityId:guid}")]
+        public async Task<IActionResult> GenerateCityInsight(
+            Guid cityId,
+            [FromBody] AIPromptRequest request,
+            CancellationToken ct)
         {
-            if (request == null) return BadRequest();
-            var dto = await _aiService.GenerateCityInsightAsync(cityId, request.Mode ?? "tourism");
-            return Ok(dto);
+            var result = await _aiService.GenerateCityInsightAsync(
+                cityId,
+                request.Mode,
+                request.UserId,
+                ct);
+
+            return Ok(new AISummaryResponse
+            {
+                Content = result.Content
+            });
         }
     }
 }

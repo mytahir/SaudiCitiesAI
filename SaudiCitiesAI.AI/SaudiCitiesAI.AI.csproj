@@ -11,11 +11,18 @@
   </ItemGroup>
 
   <ItemGroup>
+	  <ProjectReference Include="..\SaudiCitiesAI.Domain\SaudiCitiesAI.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Microsoft.Extensions.Configuration.Abstractions">
       <HintPath>..\..\..\..\..\..\n\microsoft.extensions.configuration.abstractions\9.0.11\lib\net9.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Extensions.Logging.Abstractions">
       <HintPath>..\..\..\..\..\..\n\microsoft.extensions.logging.abstractions\9.0.11\lib\net9.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options">
+      <HintPath>..\..\..\..\..\..\n\microsoft.extensions.options\10.0.0\lib\net9.0\Microsoft.Extensions.Options.dll</HintPath>
     </Reference>
   </ItemGroup>
 

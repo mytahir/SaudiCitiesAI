@@ -1,40 +1,85 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SaudiCitiesAI.Application.Interfaces;
-
+using SaudiCitiesAI.Api.DTOs.Responses;
 
 namespace SaudiCitiesAI.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/cities")]
+    [Route("api/cities")]
     public class CitiesController : ControllerBase
     {
         private readonly ICityService _cityService;
+
         public CitiesController(ICityService cityService)
         {
             _cityService = cityService;
         }
 
+        /// <summary>
+        /// Get all Saudi cities (paginated)
+        /// </summary>
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] int page = 1, [FromQuery] int pageSize = 50)
+        public async Task<IActionResult> GetAll(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 50,
+            CancellationToken ct = default)
         {
-            var list = await _cityService.GetAllAsync(page, pageSize);
-            return Ok(list);
+            var cities = await _cityService.GetAllAsync(page, pageSize, ct);
+
+            var response = cities.Select(c => new CityResponse
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Region = c.Region,
+                Latitude = c.Latitude,
+                Longitude = c.Longitude
+            });
+
+            return Ok(response);
         }
 
+        /// <summary>
+        /// Get city by ID
+        /// </summary>
         [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
         {
-            var city = await _cityService.GetByIdAsync(id);
-            if (city == null) return NotFound();
-            return Ok(city);
+            var city = await _cityService.GetByIdAsync(id, ct);
+
+            if (city == null)
+                return NotFound();
+
+            return Ok(new CityResponse
+            {
+                Id = city.Id,
+                Name = city.Name,
+                Region = city.Region,
+                Latitude = city.Latitude,
+                Longitude = city.Longitude
+            });
         }
 
+        /// <summary>
+        /// Search cities by name
+        /// </summary>
         [HttpGet("search")]
-        public async Task<IActionResult> Search([FromQuery] string q)
+        public async Task<IActionResult> Search(
+            [FromQuery] string q,
+            [FromQuery] int limit = 50,
+            CancellationToken ct = default)
         {
-            if (string.IsNullOrWhiteSpace(q)) return BadRequest("q is required");
-            var result = await _cityService.SearchByNameAsync(q);
-            return Ok(result);
+            var cities = await _cityService.SearchByNameAsync(q, limit, ct);
+
+            var response = cities.Select(c => new CityResponse
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Region = c.Region,
+                Latitude = c.Latitude,
+                Longitude = c.Longitude
+            });
+
+            return Ok(response);
         }
     }
 }

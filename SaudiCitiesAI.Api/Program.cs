@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using SaudiCitiesAI.AI.Config;
+using SaudiCitiesAI.Api.Config;
 using SaudiCitiesAI.Application.Interfaces;
 using SaudiCitiesAI.Application.Services;
 using SaudiCitiesAI.Infrastructure.Persistence;
@@ -14,6 +16,11 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<ICityService, CityService>();
 builder.Services.AddScoped<IAttractionService, AttractionService>();
 builder.Services.AddScoped<IAIInsightService, AIInsightService>();
+
+builder.Services.Configure<LongCatSettings>(
+    builder.Configuration.GetSection("LongCatSettings")
+);
+
 
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

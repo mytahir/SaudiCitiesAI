@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SaudiCitiesAI.Application.Interfaces;
-using System;
-using System.Threading.Tasks;
+using SaudiCitiesAI.Api.DTOs.Responses;
 
 namespace SaudiCitiesAI.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/cities/{cityId:guid}/attractions")]
+    [Route("api/attractions")]
     public class AttractionsController : ControllerBase
     {
         private readonly IAttractionService _attractionService;
@@ -16,20 +15,47 @@ namespace SaudiCitiesAI.Api.Controllers
             _attractionService = attractionService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetByCity(Guid cityId)
+        /// <summary>
+        /// Get attractions by city
+        /// </summary>
+        [HttpGet("city/{cityId:guid}")]
+        public async Task<IActionResult> GetByCity(
+            Guid cityId,
+            CancellationToken ct)
         {
-            var list = await _attractionService.GetByCityIdAsync(cityId);
-            return Ok(list);
+            var attractions = await _attractionService.GetByCityIdAsync(cityId, ct);
+
+            var response = attractions.Select(a => new AttractionResponse
+            {
+                Id = a.Id,
+                Name = a.Name,
+                Category = a.Category,
+                Description = a.Description
+            });
+
+            return Ok(response);
         }
 
+        /// <summary>
+        /// Search attractions by name
+        /// </summary>
         [HttpGet("search")]
-        [Route("/api/v1/attractions/search")]
-        public async Task<IActionResult> Search([FromQuery] string q)
+        public async Task<IActionResult> Search(
+            [FromQuery] string q,
+            [FromQuery] int limit = 50,
+            CancellationToken ct = default)
         {
-            if (string.IsNullOrWhiteSpace(q)) return BadRequest("q is required");
-            var list = await _attractionService.SearchByNameAsync(q);
-            return Ok(list);
+            var attractions = await _attractionService.SearchByNameAsync(q, limit, ct);
+
+            var response = attractions.Select(a => new AttractionResponse
+            {
+                Id = a.Id,
+                Name = a.Name,
+                Category = a.Category,
+                Description = a.Description
+            });
+
+            return Ok(response);
         }
     }
 }

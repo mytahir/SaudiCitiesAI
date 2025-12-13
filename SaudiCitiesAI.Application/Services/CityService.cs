@@ -1,63 +1,54 @@
-﻿using SaudiCitiesAI.Application.DTOs;
+﻿using AutoMapper;
+using SaudiCitiesAI.Application.DTOs;
 using SaudiCitiesAI.Application.Interfaces;
 using SaudiCitiesAI.Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SaudiCitiesAI.Application.Services
 {
     public class CityService : ICityService
     {
-        private readonly ICityRepository _cityRepo;
+        private readonly ICityRepository _cityRepository;
+        private readonly IMapper _mapper;
 
-        public CityService(ICityRepository cityRepo)
+        public CityService(
+            ICityRepository cityRepository,
+            IMapper mapper)
         {
-            _cityRepo = cityRepo;
+            _cityRepository = cityRepository;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<CityDto>> GetAllAsync(int page = 1, int pageSize = 50, CancellationToken ct = default)
+        public async Task<IEnumerable<CityDto>> GetAllAsync(
+            int page = 1,
+            int pageSize = 50,
+            CancellationToken ct = default)
         {
-            var cities = await _cityRepo.ListAsync(page, pageSize);
-            return cities.Select(Map);
+            var all = await _cityRepository.GetAllAsync();
+
+            var paginated = all
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize);
+
+            return _mapper.Map<IEnumerable<CityDto>>(paginated);
         }
 
         public async Task<CityDto?> GetByIdAsync(Guid id, CancellationToken ct = default)
         {
-            var city = await _cityRepo.GetCityWithDetailsAsync(id, ct);
-            if (city == null) return null;
-            return Map(city);
+            var entity = await _cityRepository.GetByIdAsync(id);
+
+            return entity == null
+                ? null
+                : _mapper.Map<CityDto>(entity);
         }
 
-        public async Task<IEnumerable<CityDto>> SearchByNameAsync(string name, int limit = 50, CancellationToken ct = default)
+        public async Task<IEnumerable<CityDto>> SearchByNameAsync(
+            string name,
+            int limit = 50,
+            CancellationToken ct = default)
         {
-            var cities = await _cityRepo.SearchByNameAsync(name, ct);
-            return cities.Take(limit).Select(Map);
-        }
+            var results = await _cityRepository.SearchByNameAsync(name);
 
-        private CityDto Map(Domain.Entities.City c)
-        {
-            return new CityDto
-            {
-                Id = c.Id,
-                Name = c.Name,
-                RegionName = c.Region?.Name ?? string.Empty,
-                Latitude = Convert.ToDecimal(c.Coordinates.Latitude),
-                Longitude = Convert.ToDecimal(c.Coordinates.Longitude),
-                Population = c.Population,
-                Attractions = c.Attractions?.Select(a => new AttractionDto
-                {
-                    Id = a.Id,
-                    CityId = a.CityId,
-                    Name = a.Name,
-                    Category = a.Category.ToString(),
-                    Latitude = Convert.ToDecimal(a.Coordinates.Latitude),
-                    Longitude = Convert.ToDecimal(a.Coordinates.Longitude),
-                    Description = a.Description
-                }) ?? Array.Empty<AttractionDto>()
-            };
+            return _mapper.Map<IEnumerable<CityDto>>(results.Take(limit));
         }
     }
 }

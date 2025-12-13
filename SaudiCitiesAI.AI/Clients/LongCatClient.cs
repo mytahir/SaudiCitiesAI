@@ -1,63 +1,54 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Net.Http.Json;
+using Microsoft.Extensions.Options;
+using SaudiCitiesAI.AI.Models;
+using SaudiCitiesAI.AI.Config;
 
 namespace SaudiCitiesAI.AI.Clients
 {
     public class LongCatClient
     {
         private readonly HttpClient _http;
-        private readonly string _apiKey;
-        private readonly ILogger<LongCatClient> _logger;
+        private readonly LongCatSettings _settings;
 
-        public LongCatClient(HttpClient http, IConfiguration configuration, ILogger<LongCatClient> logger)
+        public LongCatClient(HttpClient http, IOptions<LongCatSettings> settings)
         {
             _http = http;
-            _logger = logger;
-            _apiKey = configuration.GetValue<string>("LongCatSettings:ApiKey") ?? string.Empty;
+            _settings = settings.Value;
+
+            // Configure base address + API key header
+            _http.BaseAddress = new Uri(_settings.BaseUrl);
+            _http.DefaultRequestHeaders.Add("x-api-key", _settings.ApiKey);
         }
 
-        public async Task<string?> SendPromptAsync(string prompt, CancellationToken ct = default)
+        public async Task<LongCatResponse> SendAsync(LongCatRequest request, CancellationToken ct = default)
         {
-            if (string.IsNullOrWhiteSpace(prompt)) return null;
+            request.Model = _settings.Model;
 
-            var payload = new
+            var response = await _http.PostAsJsonAsync(
+                "/v1/chat/completions",
+                request,
+                ct
+            );
+
+            var json = await response.Content.ReadAsStringAsync(ct);
+
+            if (!response.IsSuccessStatusCode)
             {
-                prompt = prompt,
-                // you can add model, temperature, max_tokens etc as required by LongCat API
+                return new LongCatResponse
+                {
+                    Success = false,
+                    Content = "LongCat API request failed.",
+                    RawJson = json
+                };
+            }
+
+            return new LongCatResponse
+            {
+                Success = true,
+                Content = json,
+                RawJson = json
             };
-
-            using var request = new HttpRequestMessage(HttpMethod.Post, "/v1/generate")
-            {
-                Content = JsonContent.Create(payload)
-            };
-
-            if (!string.IsNullOrWhiteSpace(_apiKey))
-                request.Headers.Add("Authorization", $"Bearer {_apiKey}");
-
-            HttpResponseMessage resp;
-            try
-            {
-                resp = await _http.SendAsync(request, ct);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "LongCat request failed.");
-                throw;
-            }
-
-            if (!resp.IsSuccessStatusCode)
-            {
-                var err = await resp.Content.ReadAsStringAsync(ct);
-                _logger.LogWarning("LongCat returned {Status}: {Body}", resp.StatusCode, err);
-                return null;
-            }
-
-            var json = await resp.Content.ReadAsStringAsync(ct);
-            // For simplicity, return raw JSON, or parse as needed.
-            return json;
         }
     }
 }

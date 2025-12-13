@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SaudiCitiesAI.AI.Models
+﻿namespace SaudiCitiesAI.AI.Models
 {
-    internal class LongCatRequest
+    public class LongCatRequest
     {
+        public string Model { get; set; } = "longcat-chat";
+        public string Prompt { get; set; } = string.Empty;
+        public Guid? UserId { get; set; }
     }
 }
