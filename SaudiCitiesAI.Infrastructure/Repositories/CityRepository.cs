@@ -20,7 +20,7 @@ namespace SaudiCitiesAI.Infrastructure.Repositories
                 .FirstOrDefaultAsync(c => c.Id == id, ct);
         }
 
-        public async Task<List<City>> SearchByNameAsync(string name, CancellationToken ct = default)
+        public async Task<List<City>> SearchByNameAsync(string name, int limit, CancellationToken ct = default)
         {
             return await _set
                 .Where(c => EF.Functions.Like(EF.Property<string>(c, "Name"), $"%{name}%"))

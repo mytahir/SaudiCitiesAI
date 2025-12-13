@@ -22,7 +22,7 @@ namespace SaudiCitiesAI.Infrastructure.Repositories
             return await _set.FindAsync(new object[] { id }, ct);
         }
 
-        public virtual async Task<List<TEntity>> GetAllAsync(CancellationToken ct = default)
+        public virtual async Task<List<TEntity>> GetAllAsync(int page, int pageSize, CancellationToken ct = default)
         {
             return await _set.AsNoTracking().ToListAsync(ct);
         }

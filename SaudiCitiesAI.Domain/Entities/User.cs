@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SaudiCitiesAI.Domain.Entities
 {
@@ -11,8 +8,10 @@ namespace SaudiCitiesAI.Domain.Entities
         public Guid Id { get; private set; }
         public string Email { get; private set; }
         public string ApiKeyHash { get; private set; }
+        public int TotalQueries { get; private set; }
         public DateTime CreatedAt { get; private set; }
 
+        // Navigation collections
         private readonly List<UserSearchHistory> _searchHistory = new();
         public IReadOnlyCollection<UserSearchHistory> SearchHistory => _searchHistory;
 
@@ -22,35 +21,21 @@ namespace SaudiCitiesAI.Domain.Entities
         private readonly List<UserAIQuery> _aiQueries = new();
         public IReadOnlyCollection<UserAIQuery> AIQueries => _aiQueries;
 
-        private User() { } // EF Core only
+        protected User() { } // Required by EF Core
 
+        // ✅ This is the constructor to use in code
         public User(string email, string apiKeyHash)
         {
             Id = Guid.NewGuid();
-            Email = email.Trim().ToLower();
+            Email = email;
             ApiKeyHash = apiKeyHash;
-            CreatedAt = DateTime.UtcNow;
+            CreatedAt = DateTime.UtcNow; // Sets default value in code
         }
 
-        public void UpdateApiKeyHash(string newHash)
-        {
-            ApiKeyHash = newHash;
-        }
-
-        public void AddSearch(UserSearchHistory history)
-        {
-            _searchHistory.Add(history);
-        }
-
-        public void AddFavorite(UserFavorite fav)
-        {
-            _favorites.Add(fav);
-        }
-
-        public void AddAIQuery(UserAIQuery query)
-        {
-            _aiQueries.Add(query);
-        }
+        // Business logic methods
+        public void IncrementQueries() => TotalQueries++;
+        public void AddSearchHistory(UserSearchHistory history) => _searchHistory.Add(history);
+        public void AddFavorite(UserFavorite favorite) => _favorites.Add(favorite);
+        public void AddAIQuery(UserAIQuery query) => _aiQueries.Add(query);
     }
 }
-

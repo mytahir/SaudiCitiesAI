@@ -19,6 +19,11 @@ namespace SaudiCitiesAI.Domain.Interfaces
 
         Task<List<City>> SearchByNameAsync(
             string name,
+            int limit,
+            CancellationToken ct = default);
+
+        Task<List<City>> GetByRegionAsync(
+            string regionName,
             CancellationToken ct = default);
     }
 }

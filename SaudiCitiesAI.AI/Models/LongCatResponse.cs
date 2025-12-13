@@ -2,8 +2,10 @@
 {
     public class LongCatResponse
     {
+        public bool Success { get; set; }
+
         public string Content { get; set; } = string.Empty;
-        public string RawJson { get; set; } = string.Empty;
-        public bool Success { get; set; } = true;
+
+        public string? RawJson { get; set; }
     }
 }

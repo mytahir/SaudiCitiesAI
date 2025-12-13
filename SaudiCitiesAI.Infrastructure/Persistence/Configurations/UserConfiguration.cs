@@ -10,42 +10,52 @@ namespace SaudiCitiesAI.Infrastructure.Persistence.Configurations
         {
             builder.ToTable("Users");
 
+            // Primary key
             builder.HasKey(u => u.Id);
-
             builder.Property(u => u.Id).HasColumnName("Id").IsRequired();
 
-            builder.Property<string>("Email")
+            // Email
+            builder.Property(u => u.Email)
                    .HasColumnName("Email")
                    .HasMaxLength(200)
                    .IsRequired();
 
-            // Hashed API key storage
-            builder.Property<string>("ApiKeyHash")
+            // Hashed API key
+            builder.Property(u => u.ApiKeyHash)
                    .HasColumnName("ApiKeyHash")
                    .HasMaxLength(512)
                    .IsRequired();
 
-            builder.Property<DateTime>("CreatedAt")
+            // Total Queries
+            builder.Property(u => u.TotalQueries)
+                   .HasColumnName("TotalQueries")
+                   .HasDefaultValue(0);
+
+            // CreatedAt: use constructor value, remove database default
+            builder.Property(u => u.CreatedAt)
                    .HasColumnName("CreatedAt")
-                   .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                   .IsRequired();
 
-            // relationships: search history, favorites, ai queries
-            builder.HasMany(typeof(UserSearchHistory), "_searchHistory")
+            // Navigation collections
+            builder.HasMany(u => u.SearchHistory)
                    .WithOne()
                    .HasForeignKey("UserId")
                    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(typeof(UserFavorite), "_favorites")
+            builder.HasMany(u => u.Favorites)
                    .WithOne()
                    .HasForeignKey("UserId")
                    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(typeof(UserAIQuery), "_aiQueries")
+            builder.HasMany(u => u.AIQueries)
                    .WithOne()
                    .HasForeignKey("UserId")
                    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasIndex("Email").IsUnique().HasDatabaseName("UX_Users_Email");
+            // Unique index on Email
+            builder.HasIndex(u => u.Email)
+                   .IsUnique()
+                   .HasDatabaseName("UX_Users_Email");
         }
     }
 }

@@ -18,7 +18,7 @@ namespace SaudiCitiesAI.Infrastructure.Repositories
                 .ToListAsync(ct);
         }
 
-        public async Task<IEnumerable<Attraction>> SearchByNameAsync(string name, CancellationToken ct = default)
+        public async Task<IEnumerable<Attraction>> SearchByNameAsync(string name, int limit, CancellationToken ct = default)
         {
             return await _set
                 .Where(a => EF.Functions.Like(EF.Property<string>(a, "Name"), $"%{name}%"))

@@ -50,6 +50,7 @@ namespace SaudiCitiesAI.Api.Controllers
             var response = attractions.Select(a => new AttractionResponse
             {
                 Id = a.Id,
+                CityId = a.CityId,
                 Name = a.Name,
                 Category = a.Category,
                 Description = a.Description

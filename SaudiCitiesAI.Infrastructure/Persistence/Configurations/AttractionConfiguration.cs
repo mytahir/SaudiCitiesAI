@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SaudiCitiesAI.Domain.Entities;
-using SaudiCitiesAI.Domain.ValueObjects;
 using SaudiCitiesAI.Domain.Enums;
 
 namespace SaudiCitiesAI.Infrastructure.Persistence.Configurations
@@ -13,45 +12,52 @@ namespace SaudiCitiesAI.Infrastructure.Persistence.Configurations
             builder.ToTable("Attractions");
 
             builder.HasKey(a => a.Id);
+
             builder.Property(a => a.Id)
                    .HasColumnName("Id")
                    .IsRequired();
 
-            builder.Property<string>("Name")
+            builder.Property(a => a.Name)
                    .HasColumnName("Name")
                    .HasMaxLength(250)
                    .IsRequired();
 
-            builder.Property<Guid>("CityId")
+            builder.Property(a => a.CityId)
                    .HasColumnName("CityId")
                    .IsRequired();
 
-            builder.Property<AttractionCategory>("Category")
+            builder.Property(a => a.Category)
                    .HasColumnName("Category")
                    .HasConversion<int>()
                    .IsRequired();
 
-            // Coordinates owned
-            builder.OwnsOne(typeof(Coordinates), "_coordinates", owned =>
-            {
-                owned.Property<decimal>("Latitude")
-                     .HasColumnName("Latitude")
-                     .HasColumnType("decimal(9,6)")
-                     .IsRequired();
-
-                owned.Property<decimal>("Longitude")
-                     .HasColumnName("Longitude")
-                     .HasColumnType("decimal(9,6)")
-                     .IsRequired();
-            });
-
-            builder.Property<string?>("Description")
+            builder.Property(a => a.Description)
                    .HasColumnName("Description")
                    .HasColumnType("longtext")
                    .IsRequired(false);
 
-            builder.HasIndex("CityId").HasDatabaseName("IX_Attractions_CityId");
-            builder.HasIndex("Name").HasDatabaseName("IX_Attractions_Name");
+            // Map Coordinates as owned type
+            builder.OwnsOne(a => a.Coordinates, coords =>
+            {
+                coords.Property(c => c.Latitude)
+                      .HasColumnName("Latitude")
+                      .HasColumnType("decimal(9,6)")
+                      .IsRequired();
+
+                coords.Property(c => c.Longitude)
+                      .HasColumnName("Longitude")
+                      .HasColumnType("decimal(9,6)")
+                      .IsRequired();
+            });
+
+            // Indexes
+            builder.HasIndex(a => a.CityId).HasDatabaseName("IX_Attractions_CityId");
+            builder.HasIndex(a => a.Name).HasDatabaseName("IX_Attractions_Name");
+
+            // Optional: Configure relationship to City if needed
+            builder.HasOne<City>()
+                   .WithMany()
+                   .HasForeignKey(a => a.CityId);
         }
     }
 }

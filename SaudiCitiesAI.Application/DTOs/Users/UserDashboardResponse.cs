@@ -2,13 +2,8 @@
 {
     public class UserDashboardResponse
     {
-        public string UserId { get; set; } = string.Empty;
-        public string DisplayName { get; set; } = string.Empty;
-
-        public int TotalCityQueries { get; set; }
-        public int TotalAIInsightsUsed { get; set; }
-        public int TotalAttractionLookups { get; set; }
-
-        public DateTime LastActive { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public int TotalQueries { get; set; }
+        public DateTime RegisteredAt { get; set; }
     }
 }

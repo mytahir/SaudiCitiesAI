@@ -1,26 +1,25 @@
-﻿using AutoMapper;
-using SaudiCitiesAI.Application.DTOs;
+﻿using SaudiCitiesAI.Application.DTOs;
 using SaudiCitiesAI.Application.Interfaces;
-using SaudiCitiesAI.AI.Services;
-using SaudiCitiesAI.AI.Prompts;
 using SaudiCitiesAI.Domain.Interfaces;
+using SaudiCitiesAI.Domain.Exceptions;
+using System;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SaudiCitiesAI.Application.Services
 {
     public class AIInsightService : IAIInsightService
     {
         private readonly ICityRepository _cityRepository;
-        private readonly LongCatAIService _aiService;
-        private readonly IMapper _mapper;
+        private readonly ILongCatAIService _aiService;
 
         public AIInsightService(
             ICityRepository cityRepository,
-            LongCatAIService aiService,
-            IMapper mapper)
+            ILongCatAIService aiService)
         {
             _cityRepository = cityRepository;
             _aiService = aiService;
-            _mapper = mapper;
         }
 
         public async Task<AIGeneratedContentDto> GenerateCityInsightAsync(
@@ -29,20 +28,37 @@ namespace SaudiCitiesAI.Application.Services
             Guid? userId = null,
             CancellationToken ct = default)
         {
-            var city = await _cityRepository.GetByIdAsync(cityId);
+            var city = await _cityRepository.GetByIdAsync(cityId, ct);
 
             if (city == null)
-                throw new Exception("City not found");
+            {
+                throw new NotFoundException($"City with id '{cityId}' was not found.");
+            }
 
-            string prompt = CitySummaryPrompt.Build(city, mode);
+            var prompt = BuildPrompt(city.Name, city.Region.Name, mode);
 
-            var aiResponse = await _aiService.GenerateAsync(prompt, userId, ct);
+            var aiContent = await _aiService.GenerateAsync(prompt, ct);
 
             return new AIGeneratedContentDto
             {
-                Content = aiResponse.Content,
-                RawJson = aiResponse.RawJson
+                Content = aiContent
             };
+        }
+
+        private static string BuildPrompt(
+            string cityName,
+            string regionName,
+            string mode)
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine($"You are an expert assistant on Saudi Arabia.");
+            sb.AppendLine($"Provide a {mode} insight for the city of {cityName}.");
+            sb.AppendLine($"Region: {regionName}.");
+            sb.AppendLine($"Align the response with Saudi Vision 203_toggle.");
+            sb.AppendLine($"Keep the answer concise, informative, and factual.");
+
+            return sb.ToString();
         }
     }
 }

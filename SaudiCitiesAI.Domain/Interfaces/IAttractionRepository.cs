@@ -10,6 +10,6 @@ namespace SaudiCitiesAI.Domain.Interfaces
     public interface IAttractionRepository
     {
         Task<IEnumerable<Attraction>> GetByCityIdAsync(Guid cityId, CancellationToken ct = default);
-        Task<IEnumerable<Attraction>> SearchByNameAsync(string name, CancellationToken ct = default);
+        Task<IEnumerable<Attraction>> SearchByNameAsync(string name, int limit, CancellationToken ct = default);
     }
 }

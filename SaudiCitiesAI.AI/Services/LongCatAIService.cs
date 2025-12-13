@@ -1,9 +1,11 @@
-﻿using SaudiCitiesAI.AI.Clients;
+﻿using SaudiCitiesAI.Application.Interfaces;
+using SaudiCitiesAI.AI.Clients;
 using SaudiCitiesAI.AI.Models;
+
 
 namespace SaudiCitiesAI.AI.Services
 {
-    public class LongCatAIService
+    public class LongCatAIService : ILongCatAIService
     {
         private readonly LongCatClient _client;
 
@@ -12,18 +14,32 @@ namespace SaudiCitiesAI.AI.Services
             _client = client;
         }
 
-        public async Task<LongCatResponse> GenerateAsync(
+        public async Task<string> GenerateAsync(
             string prompt,
-            Guid? userId = null,
             CancellationToken ct = default)
         {
             var request = new LongCatRequest
             {
-                Prompt = prompt,
-                UserId = userId
+                Model = "longcat-large",   // example, configurable later
+                Messages = new[]
+                {
+                    new LongCatMessage
+                    {
+                        Role = "user",
+                        Content = prompt
+                    }
+                }
             };
 
-            return await _client.SendAsync(request, ct);
+            var response = await _client.SendAsync(request, ct);
+
+            if (!response.Success)
+            {
+                throw new InvalidOperationException(
+                    $"LongCat AI failed: {response.Content}");
+            }
+
+            return response.Content;
         }
     }
 }
