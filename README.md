@@ -1,3 +1,5 @@
+# 🇸🇦 SaudiCitiesAI — Saudi Arabia Cities API with AI Insights
+
 **SaudiCitiesAI** is a modern, developer-first API that provides **structured data about Saudi Arabian cities**, enriched with **AI-generated insights** powered by OpenStreetMap and AI models.
 
 It is designed to help developers, startups, researchers, and enterprises **build smarter applications around Saudi cities**, tourism, Vision 2030, and location-based intelligence.
@@ -204,3 +206,5 @@ Contributions are welcome!
 ## 🧠 Vision
 
 > **SaudiCitiesAI aims to become the go-to developer platform for Saudi city intelligence — combining open data, AI, and clean engineering.**
+
+---
