@@ -1,5 +1,3 @@
-Absolutely — here’s an **outstanding, production-grade GitHub README** tailored for your project’s vision, architecture, a# 🇸🇦 SaudiCitiesAI — Saudi Arabia Cities API with AI Insights
-
 **SaudiCitiesAI** is a modern, developer-first API that provides **structured data about Saudi Arabian cities**, enriched with **AI-generated insights** powered by OpenStreetMap and AI models.
 
 It is designed to help developers, startups, researchers, and enterprises **build smarter applications around Saudi cities**, tourism, Vision 2030, and location-based intelligence.
