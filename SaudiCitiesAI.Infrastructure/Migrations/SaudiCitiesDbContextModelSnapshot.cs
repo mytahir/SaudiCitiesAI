@@ -98,10 +98,8 @@ namespace SaudiCitiesAI.Infrastructure.Migrations
                         .HasColumnName("ApiKeyHash");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasColumnName("CreatedAt")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnName("CreatedAt");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -192,10 +190,8 @@ namespace SaudiCitiesAI.Infrastructure.Migrations
                         .HasColumnName("Query");
 
                     b.Property<DateTime>("Timestamp")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasColumnName("Timestamp")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnName("Timestamp");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("char(36)")

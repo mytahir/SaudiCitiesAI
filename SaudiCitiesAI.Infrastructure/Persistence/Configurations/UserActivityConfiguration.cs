@@ -21,7 +21,7 @@ namespace SaudiCitiesAI.Infrastructure.Persistence.Configurations
 
             builder.Property<DateTime>("Timestamp")
                    .HasColumnName("Timestamp")
-                   .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                   .IsRequired();
 
             builder.HasIndex("UserId").HasDatabaseName("IX_UserSearchHistories_UserId");
         }

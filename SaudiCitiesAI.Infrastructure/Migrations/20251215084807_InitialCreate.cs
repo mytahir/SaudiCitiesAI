@@ -46,7 +46,7 @@ namespace SaudiCitiesAI.Infrastructure.Migrations
                     ApiKeyHash = table.Column<string>(type: "varchar(512)", maxLength: 512, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     TotalQueries = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -158,7 +158,7 @@ namespace SaudiCitiesAI.Infrastructure.Migrations
                     UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     Query = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Timestamp = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
+                    Timestamp = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
