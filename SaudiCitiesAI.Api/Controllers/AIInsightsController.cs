@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SaudiCitiesAI.Application.Interfaces;
 using SaudiCitiesAI.Api.DTOs.Requests;
 using SaudiCitiesAI.Api.DTOs.Responses;
+using SaudiCitiesAI.Application.Interfaces;
+using SaudiCitiesAI.Application.Utils;
 
 namespace SaudiCitiesAI.Api.Controllers
 {
@@ -39,11 +40,14 @@ namespace SaudiCitiesAI.Api.Controllers
 
         [HttpPost("city/search")]
         public async Task<IActionResult> GenerateCityInsightByName(
-    [FromBody] AIPromptRequest request,
-    CancellationToken ct)
+            [FromBody] AIPromptRequest request,
+            CancellationToken ct)
         {
+            // Normalize input: convert English variant to Arabic
+            var arabicCityName = SaudiCityNameMapper.GetArabicName(request.CityName);
+
             var result = await _aiService.GenerateCityInsightByNameAsync(
-                request.CityName,
+                arabicCityName,
                 request.Mode,
                 request.UserId,
                 ct);
@@ -53,6 +57,7 @@ namespace SaudiCitiesAI.Api.Controllers
                 Content = result.Content
             });
         }
+
 
     }
 }

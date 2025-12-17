@@ -35,7 +35,7 @@ namespace SaudiCitiesAI.Application.Services
             // ⚠️ OSM fallback — SMALL SAMPLE ONLY
             var osmCities = await _externalProvider.SearchAsync(
                 name: "",
-                limit: 20,
+                limit: pageSize,
                 ct);
 
             return osmCities.Select(MapFromSnapshot);
