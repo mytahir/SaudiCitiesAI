@@ -36,5 +36,23 @@ namespace SaudiCitiesAI.Api.Controllers
                 Content = result.Content
             });
         }
+
+        [HttpPost("city/search")]
+        public async Task<IActionResult> GenerateCityInsightByName(
+    [FromBody] AIPromptRequest request,
+    CancellationToken ct)
+        {
+            var result = await _aiService.GenerateCityInsightByNameAsync(
+                request.CityName,
+                request.Mode,
+                request.UserId,
+                ct);
+
+            return Ok(new AISummaryResponse
+            {
+                Content = result.Content
+            });
+        }
+
     }
 }

@@ -69,6 +69,9 @@ namespace SaudiCitiesAI.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 
+                    b.Property<long>("OsmId")
+                        .HasColumnType("bigint");
+
                     b.Property<int?>("Population")
                         .HasColumnType("int");
 

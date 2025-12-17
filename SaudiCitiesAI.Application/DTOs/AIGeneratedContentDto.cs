@@ -4,7 +4,7 @@ namespace SaudiCitiesAI.Application.DTOs
 {
     public class AIGeneratedContentDto
     {
-        public string Content { get; set; } = string.Empty;
+        public string Content { get; set; } = default!;
+        public string Mode { get; set; } = default!;
     }
-
 }

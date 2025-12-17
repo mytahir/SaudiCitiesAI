@@ -1,53 +1,61 @@
-﻿using System.Net.Http;
-using System.Net.Http.Json;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using SaudiCitiesAI.AI.Models;
 using SaudiCitiesAI.AI.Config;
+using SaudiCitiesAI.AI.Models;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace SaudiCitiesAI.AI.Clients
 {
     public class LongCatClient
     {
         private readonly HttpClient _http;
-        private readonly LongCatSettings _settings;
 
-        public LongCatClient(HttpClient http, IOptions<LongCatSettings> settings)
+        public LongCatClient(HttpClient http, IConfiguration config)
         {
             _http = http;
-            _settings = settings.Value;
-
-            // Configure base address + API key header
-            _http.BaseAddress = new Uri(_settings.BaseUrl);
-            _http.DefaultRequestHeaders.Add("x-api-key", _settings.ApiKey);
+            _http.BaseAddress = new Uri("https://api.longcat.chat/");
+            _http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    config["LongCat:ApiKey"]);
         }
 
-        public async Task<LongCatResponse> SendAsync(LongCatRequest request, CancellationToken ct = default)
+        public async Task<LongCatResponse> SendAsync(
+            LongCatRequest request,
+            CancellationToken ct)
         {
-            request.Model = _settings.Model;
-
             var response = await _http.PostAsJsonAsync(
-                "/v1/chat/completions",
+                "openai/v1/chat/completions",
                 request,
-                ct
-            );
+                ct);
 
-            var json = await response.Content.ReadAsStringAsync(ct);
+            var body = await response.Content.ReadAsStringAsync(ct);
 
             if (!response.IsSuccessStatusCode)
             {
                 return new LongCatResponse
                 {
                     Success = false,
-                    Content = "LongCat API request failed.",
-                    RawJson = json
+                    Error = body
                 };
             }
+
+            using var json = JsonDocument.Parse(body);
+
+            var content =
+                json.RootElement
+                    .GetProperty("choices")[0]
+                    .GetProperty("message")
+                    .GetProperty("content")
+                    .GetString();
 
             return new LongCatResponse
             {
                 Success = true,
-                Content = json,
-                RawJson = json
+                Content = content ?? string.Empty
             };
         }
     }

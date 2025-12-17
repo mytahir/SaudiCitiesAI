@@ -7,5 +7,6 @@
         public string Content { get; set; } = string.Empty;
 
         public string? RawJson { get; set; }
+        public string? Error { get; internal set; }
     }
 }

@@ -19,6 +19,7 @@ namespace SaudiCitiesAI.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    OsmId = table.Column<long>(type: "bigint", nullable: false),
                     Name = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     RegionName = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)

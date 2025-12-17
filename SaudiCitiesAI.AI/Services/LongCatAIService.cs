@@ -15,31 +15,32 @@ namespace SaudiCitiesAI.AI.Services
         }
 
         public async Task<string> GenerateAsync(
-            string prompt,
-            CancellationToken ct = default)
+     string prompt,
+     CancellationToken ct = default)
         {
             var request = new LongCatRequest
             {
-                Model = "longcat-large",   // example, configurable later
+                Model = "LongCat-Flash-Chat",
                 Messages = new[]
                 {
-                    new LongCatMessage
-                    {
-                        Role = "user",
-                        Content = prompt
-                    }
-                }
+            new LongCatMessage
+            {
+                Role = "user",
+                Content = prompt
+            }
+        },
+                MaxTokens = 800,
+                Temperature = 0.7
             };
 
             var response = await _client.SendAsync(request, ct);
 
             if (!response.Success)
-            {
                 throw new InvalidOperationException(
-                    $"LongCat AI failed: {response.Content}");
-            }
+                    $"LongCat AI failed: {response.Error ?? "Unknown error"}");
 
             return response.Content;
         }
+
     }
 }

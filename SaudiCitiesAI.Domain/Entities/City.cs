@@ -5,6 +5,7 @@ namespace SaudiCitiesAI.Domain.Entities
     public class City
     {
         public Guid Id { get; private set; }
+        public long OsmId { get; private set; }
         public string Name { get; private set; }
         public Region Region { get; private set; }
         public Coordinates Coordinates { get; private set; }
@@ -19,12 +20,14 @@ namespace SaudiCitiesAI.Domain.Entities
 
         private City() { }
 
-        public City(string name, Region region, Coordinates coordinates)
+        public City(string name, Region region, Coordinates coordinates, long osmId, int? population, string? wikipedia, object wikidata)
         {
             Id = Guid.NewGuid();
             Name = name;
             Region = region;
             Coordinates = coordinates;
+            OsmId = osmId;
+            Population = population;
         }
 
         public void AddAttraction(Attraction attraction)

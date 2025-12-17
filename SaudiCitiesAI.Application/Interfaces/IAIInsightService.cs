@@ -7,6 +7,18 @@ namespace SaudiCitiesAI.Application.Interfaces
 {
     public interface IAIInsightService
     {
-        Task<AIGeneratedContentDto> GenerateCityInsightAsync(Guid cityId, string mode = "tourism", Guid? userId = null, CancellationToken ct = default);
+        // DB-based insight
+        Task<AIGeneratedContentDto> GenerateCityInsightAsync(
+            Guid cityId,
+            string mode = "tourism",
+            Guid? userId = null,
+            CancellationToken ct = default);
+
+        // Search-based insight (OSM-powered)
+        Task<AIGeneratedContentDto> GenerateCityInsightByNameAsync(
+            string cityName,
+            string mode = "tourism",
+            Guid? userId = null,
+            CancellationToken ct = default);
     }
 }

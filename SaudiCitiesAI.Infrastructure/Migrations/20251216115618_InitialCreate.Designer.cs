@@ -12,7 +12,7 @@ using SaudiCitiesAI.Infrastructure.Persistence;
 namespace SaudiCitiesAI.Infrastructure.Migrations
 {
     [DbContext(typeof(SaudiCitiesDbContext))]
-    [Migration("20251215084807_InitialCreate")]
+    [Migration("20251216115618_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -71,6 +71,9 @@ namespace SaudiCitiesAI.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
+
+                    b.Property<long>("OsmId")
+                        .HasColumnType("bigint");
 
                     b.Property<int?>("Population")
                         .HasColumnType("int");
