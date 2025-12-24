@@ -44,10 +44,10 @@ namespace SaudiCitiesAI.Api.Controllers
             CancellationToken ct)
         {
             // Normalize input: convert English variant to Arabic
-            var arabicCityName = SaudiCityNameMapper.GetArabicName(request.CityName);
+            //var arabicCityName = SaudiCityNameMapper.GetArabicName(request.CityName);
 
             var result = await _aiService.GenerateCityInsightByNameAsync(
-                arabicCityName,
+                request.CityName,
                 request.Mode,
                 request.UserId,
                 ct);

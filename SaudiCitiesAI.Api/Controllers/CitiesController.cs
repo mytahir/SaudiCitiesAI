@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SaudiCitiesAI.Application.Interfaces;
 using SaudiCitiesAI.Api.DTOs.Responses;
+using SaudiCitiesAI.Application.Interfaces;
+using SaudiCitiesAI.Application.Utils;
 
 namespace SaudiCitiesAI.Api.Controllers
 {
@@ -68,7 +69,10 @@ namespace SaudiCitiesAI.Api.Controllers
             [FromQuery] int limit = 50,
             CancellationToken ct = default)
         {
-            var cities = await _cityService.SearchByNameAsync(q, limit, ct);
+            // Normalize input: convert English variant to Arabic
+            var arabicCityName = SaudiCityNameMapper.GetArabicName(q);
+
+            var cities = await _cityService.SearchByNameAsync(arabicCityName, limit, ct);
 
             var response = cities.Select(c => new CityResponse
             {

@@ -9,6 +9,7 @@
   <ItemGroup>
     <Folder Include="Jobs\" />
     <Folder Include="Extensions\" />
+    <Folder Include="Jobs\" />
     <Folder Include="Schedules\" />
   </ItemGroup>
 

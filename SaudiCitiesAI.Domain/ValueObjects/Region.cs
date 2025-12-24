@@ -5,7 +5,7 @@ namespace SaudiCitiesAI.Domain.ValueObjects
     public class Region
     {
         public string Name { get; }
-        public RegionType Type { get; }
+        public RegionType? Type { get; }
 
         private Region() { }
 

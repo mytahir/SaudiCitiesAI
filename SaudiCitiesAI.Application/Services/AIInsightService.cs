@@ -1,5 +1,6 @@
 ﻿using SaudiCitiesAI.Application.DTOs;
 using SaudiCitiesAI.Application.Interfaces;
+using SaudiCitiesAI.Domain.Entities;
 using SaudiCitiesAI.Domain.Interfaces;
 
 namespace SaudiCitiesAI.Application.Services
@@ -9,15 +10,20 @@ namespace SaudiCitiesAI.Application.Services
         private readonly ICityRepository _cities;
         private readonly ICityExternalProvider _externalCities;
         private readonly ILongCatAIService _ai;
+        private readonly ICityRepository _cityRepository;
+        private readonly ICityAIInsightRepository _insights;
 
         public AIInsightService(
             ICityRepository cities,
             ICityExternalProvider externalCities,
-            ILongCatAIService ai)
+            ILongCatAIService ai,
+            ICityRepository cityRepository, ICityAIInsightRepository insights)
         {
             _cities = cities;
             _externalCities = externalCities;
             _ai = ai;
+            _cityRepository = cityRepository;
+            _insights = insights;
         }
 
         public async Task<AIGeneratedContentDto> GenerateCityInsightAsync(
@@ -45,34 +51,63 @@ namespace SaudiCitiesAI.Application.Services
             return await GenerateFromSnapshot(snapshot, mode, ct);
         }
 
-        // 🔥 SEARCH-BASED INSIGHT (KEY FEATURE)
         public async Task<AIGeneratedContentDto> GenerateCityInsightByNameAsync(
-            string cityName,
-            string mode = "tourism",
-            Guid? userId = null,
-            CancellationToken ct = default)
+     string cityName,
+     string mode,
+     Guid? userId = null,
+     CancellationToken ct = default)
         {
-            var matches = await _externalCities.SearchAsync(cityName, 1, ct);
-            var snapshot = matches.FirstOrDefault();
+            var cities = await _cityRepository.SearchByNameAsync(cityName, 1, ct);
+            var city = cities.FirstOrDefault();
 
-            if (snapshot == null)
-                throw new InvalidOperationException("City not found via OpenStreetMap.");
+            if (city == null)
+                throw new InvalidOperationException("City not found in database.");
+
+            var snapshot = new CitySnapshot(
+                city.Name,
+                city.Region?.Name,
+                city.Coordinates.Latitude,
+                city.Coordinates.Longitude,
+                city.Population,
+                city.Wikipedia,
+                city.OsmId
+            );
 
             return await GenerateFromSnapshot(snapshot, mode, ct);
         }
-
         private async Task<AIGeneratedContentDto> GenerateFromSnapshot(
             CitySnapshot city,
             string mode,
             CancellationToken ct)
         {
+            // 1️⃣ Try cache / DB first
+            var existing = await _insights.GetLatestAsync(city.Name, mode, ct);
+            if (existing != null)
+            {
+                return new AIGeneratedContentDto
+                {
+                    Content = existing.Content
+                };
+            }
+
+            // 2️⃣ Generate AI insight
             var prompt = BuildPrompt(city, mode);
             var aiResponse = await _ai.GenerateAsync(prompt, ct);
 
+            // 3️⃣ Persist insight
+            var insight = new CityAIInsight(
+                cityId: null,
+                cityName: city.Name,
+                mode: mode,
+                content: aiResponse
+            );
+
+            await _insights.AddAsync(insight, ct);
+
+            // 4️⃣ Return
             return new AIGeneratedContentDto
             {
-                Content = aiResponse,
-                Mode = mode
+                Content = aiResponse
             };
         }
 

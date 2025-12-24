@@ -7,7 +7,7 @@ namespace SaudiCitiesAI.Domain.Entities
         public Guid Id { get; private set; }
         public long OsmId { get; private set; }
         public string Name { get; private set; }
-        public Region Region { get; private set; }
+        public Region? Region { get; private set; }
         public Coordinates Coordinates { get; private set; }
 
         private readonly List<Attraction> _attractions = new();
@@ -17,6 +17,7 @@ namespace SaudiCitiesAI.Domain.Entities
         public IReadOnlyCollection<Vision2030Focus> VisionFocus => _visionFocus;
 
         public int? Population { get; set; }
+        public string? Wikipedia { get; set; }
 
         private City() { }
 
@@ -28,6 +29,7 @@ namespace SaudiCitiesAI.Domain.Entities
             Coordinates = coordinates;
             OsmId = osmId;
             Population = population;
+            Wikipedia = wikipedia;
         }
 
         public void AddAttraction(Attraction attraction)

@@ -37,12 +37,12 @@ namespace SaudiCitiesAI.Infrastructure.Persistence.Configurations
                 region.Property(r => r.Name)
                       .HasColumnName("RegionName")
                       .HasMaxLength(150)
-                      .IsRequired();
+                      .IsRequired(false);
 
                 region.Property(r => r.Type)
                       .HasColumnName("RegionType")
                       .HasConversion<int>()
-                      .IsRequired();
+                      .IsRequired(false);
 
                 // Index on RegionName
                 region.HasIndex(r => r.Name).HasDatabaseName("IX_Cities_RegionName");

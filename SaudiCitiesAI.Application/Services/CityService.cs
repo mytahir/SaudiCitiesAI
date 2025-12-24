@@ -19,26 +19,14 @@ namespace SaudiCitiesAI.Application.Services
             _externalProvider = externalProvider;
         }
 
-        // ---------------------------------------------
-        // GET ALL (DB first, limited OSM fallback)
-        // ---------------------------------------------
         public async Task<IEnumerable<CityDto>> GetAllAsync(
-            int page,
-            int pageSize,
-            CancellationToken ct = default)
+             int page,
+             int pageSize,
+             CancellationToken ct = default)
         {
-            var cities = await _cityRepository.GetAllAsync(page, pageSize, ct);
+            var cities = await _cityRepository.ListAsync(page, pageSize, ct);
 
-            if (cities.Any())
-                return cities.Select(MapToDto);
-
-            // ⚠️ OSM fallback — SMALL SAMPLE ONLY
-            var osmCities = await _externalProvider.SearchAsync(
-                name: "",
-                limit: pageSize,
-                ct);
-
-            return osmCities.Select(MapFromSnapshot);
+            return cities.Select(MapToDto);
         }
 
         // ---------------------------------------------

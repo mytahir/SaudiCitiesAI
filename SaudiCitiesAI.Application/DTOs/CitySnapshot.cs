@@ -6,4 +6,7 @@
     int? Population,
     string? Wikipedia,
     long OsmId
-);
+)
+{
+    public object Wikidata { get; internal set; }
+}

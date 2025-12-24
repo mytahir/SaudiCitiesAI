@@ -25,5 +25,7 @@ namespace SaudiCitiesAI.Domain.Interfaces
         Task<List<City>> GetByRegionAsync(
             string regionName,
             CancellationToken ct = default);
+
+        Task<bool> ExistsByOsmIdAsync(long osmId);
     }
 }

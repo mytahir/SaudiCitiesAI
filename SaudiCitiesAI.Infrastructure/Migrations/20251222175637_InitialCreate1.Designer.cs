@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SaudiCitiesAI.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using SaudiCitiesAI.Infrastructure.Persistence;
 namespace SaudiCitiesAI.Infrastructure.Migrations
 {
     [DbContext(typeof(SaudiCitiesDbContext))]
-    partial class SaudiCitiesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251222175637_InitialCreate1")]
+    partial class InitialCreate1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -88,35 +91,6 @@ namespace SaudiCitiesAI.Infrastructure.Migrations
                         .HasDatabaseName("IX_Cities_Name");
 
                     b.ToTable("Cities", (string)null);
-                });
-
-            modelBuilder.Entity("SaudiCitiesAI.Domain.Entities.CityAIInsight", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid?>("CityId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("CityName")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("GeneratedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Mode")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CityAIInsights");
                 });
 
             modelBuilder.Entity("SaudiCitiesAI.Domain.Entities.User", b =>
@@ -329,11 +303,12 @@ namespace SaudiCitiesAI.Infrastructure.Migrations
                                 .HasColumnType("char(36)");
 
                             b1.Property<string>("Name")
+                                .IsRequired()
                                 .HasMaxLength(150)
                                 .HasColumnType("varchar(150)")
                                 .HasColumnName("RegionName");
 
-                            b1.Property<int?>("Type")
+                            b1.Property<int>("Type")
                                 .HasColumnType("int")
                                 .HasColumnName("RegionType");
 
@@ -351,7 +326,8 @@ namespace SaudiCitiesAI.Infrastructure.Migrations
                     b.Navigation("Coordinates")
                         .IsRequired();
 
-                    b.Navigation("Region");
+                    b.Navigation("Region")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("SaudiCitiesAI.Domain.Entities.UserAIQuery", b =>

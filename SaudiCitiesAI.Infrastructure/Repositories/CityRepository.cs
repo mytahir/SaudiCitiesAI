@@ -45,5 +45,11 @@ namespace SaudiCitiesAI.Infrastructure.Repositories
                 .AsNoTracking()
                 .ToListAsync(ct);
         }
+
+        public async Task<bool> ExistsByOsmIdAsync(long osmId)
+        {
+            return await _set.AnyAsync(c => c.OsmId == osmId);
+        }
+
     }
 }
