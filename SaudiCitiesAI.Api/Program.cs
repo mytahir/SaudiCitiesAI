@@ -54,7 +54,13 @@ using (var scope = app.Services.CreateScope())
 RecurringJob.AddOrUpdate<CityOsmSyncJob>(
     "sync-saudi-cities",
     job => job.SyncAsync(CancellationToken.None),
-    Cron.Daily);
+    Cron.Hourly);
+
+RecurringJob.AddOrUpdate<ICityAIInsightJob>(
+    "daily-city-ai-insights",
+    job => job.RefreshDailyInsightsAsync(CancellationToken.None),
+    Cron.Hourly);
+
 
 app.UseHangfireDashboard("/hangfire");
 

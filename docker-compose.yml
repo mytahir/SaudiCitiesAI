@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  saudi-cities-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: saudi-cities-api
+    ports:
+      - "8080:8080"
+    environment:
+      LongCat__ApiKey: ${LONGCAT_API_KEY}
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+
+      ConnectionStrings__DefaultConnection: >
+        Server=saudi-cities-db;
+        Database=SaudiCitiesAI;
+        User Id=sa;
+        Password=YourStrong!Passw0rd;
+        TrustServerCertificate=true;
+
+    depends_on:
+      - saudi-cities-db
+    networks:
+      - saudi-cities-net
+
+  saudi-cities-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: saudi-cities-db
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "YourStrong!Passw0rd"
+    volumes:
+      - saudi-cities-sql:/var/opt/mssql
+    networks:
+      - saudi-cities-net
+
+volumes:
+  saudi-cities-sql:
+
+networks:
+  saudi-cities-net:
